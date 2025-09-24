@@ -25,7 +25,7 @@ MBTI 설문 화면을 누구나 눌러보고 싶게 만드는 것이 목표다. 
 5. **재도전 유도**: 결과 공유 카드, 새로운 질문 카드 세트를 열 수 있는 “랜덤 카드 팩” 버튼을 제공한다.
 
 ## 아트 에셋 가이드
-- 카드 일러스트는 `src/public/assets/mascots/`에 320×200px PNG로 배치한다. 파일명은 `01-energy-festival.png`처럼 두 자리 번호 + 주제 케밥 케이스를 사용한다.
+- 카드 일러스트는 `assets/mascots/`에 320×200px PNG로 배치한다. 파일명은 `01-energy-festival.png`처럼 두 자리 번호 + 주제 케밥 케이스를 사용한다.
 - 질문-주제 매핑:
   - Q1 에너지 충전 축제 → `01-energy-festival.png`
   - Q2 조용한 메모 타임 → `02-quiet-notes.png`
@@ -46,9 +46,9 @@ MBTI 설문 화면을 누구나 눌러보고 싶게 만드는 것이 목표다. 
 - 최종 일러스트를 교체하면 `scripts/main.js`의 `QUESTION_ART` 매핑을 자동으로 따라가므로 파일만 덮어쓰면 된다.
 
 ## 작업 카드(우선순위 순)
-1. 카드 기반 UI 프레임 만들기: `src/public/index.html`, `styles/main.css` 구조 재정비, 카드 컴포넌트 스타일 정의.
+1. 카드 기반 UI 프레임 만들기: `index.html`, `styles/main.css` 구조 재정비, 카드 컴포넌트 스타일 정의.
 2. 마스코트, 배경 일러스트 자리 확보: PNG 플레이스홀더 추가, 후속 리소스 교체 여지를 남긴다.
-3. 질문 인터랙션 모듈화: `src/public/scripts/questions/` 디렉터리로 분리하고 카드 뒤집힘, 미니 이벤트 훅을 구현한다.
+3. 질문 인터랙션 모듈화: `scripts/questions/` 디렉터리로 분리하고 카드 뒤집힘, 미니 이벤트 훅을 구현한다.
 4. 음향/애니메이션 옵션 토글: 접근성 고려해 `settings` 패널에서 온·오프 가능하도록 한다.
 5. 결과 요약 리디자인: 카드 스탬프 애니메이션, 랜덤 카드 팩 로직, 미니 게임 CTA 정리.
 
@@ -60,7 +60,7 @@ MBTI 설문 화면을 누구나 눌러보고 싶게 만드는 것이 목표다. 
 - Day 5: 전체 흐름 연결, 기기별 반응형, 버그 픽스.
 
 ## 품질 및 배포 체크
-- 기본 검증: `npx codex build --src src --out dist`(지원되는 빌더가 준비된 경우) 또는 `python3 -m http.server 8000 --directory src/public`로 수동 미리보기.
-- 테스트: 질문 카드 전환, 미니 이벤트 타이머, 결과 저장 로직을 Mocha + JSDOM 단위 테스트로 검증.
-- 스타일 검증: `npx prettier@latest --check "src/**/*.{js,css,md}"`로 포맷 유지.
+- 기본 검증: `npx codex build --src . --out dist`(지원되는 빌더 사용 시) 또는 `python3 -m http.server 8000 --directory .`로 수동 미리보기.
+- 테스트: 자동화 스위트는 현재 중지 상태이므로 설문을 직접 완료하며 결과 그래프와 카드 보상을 검증한다.
+- 스타일 검증: `npx prettier@latest --check "{scripts,styles,data}/**/*.{js,css,md}"`로 포맷 유지.
 - 브라우저 확인: 데스크톱/모바일에서 카드 뒤집힘과 사운드 토글이 자연스럽게 동작하는지 점검.

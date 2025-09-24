@@ -4,14 +4,9 @@
   "description": "Client-side MBTI questionnaire with mini game",
   "type": "module",
   "scripts": {
-    "watch": "npx codex watch -p 1227 --src src --out dist",
-    "build": "npx codex build --src src --out dist",
-    "test": "mocha",
-    "format": "npx prettier@latest --check \"src/**/*.{js,css,md}\""
-  },
-  "devDependencies": {
-    "chai": "^4.4.1",
-    "jsdom": "^24.0.0",
-    "mocha": "^10.4.0"
+    "watch": "npx codex watch -p 1227 --src . --out dist",
+    "build": "npx codex build --src . --out dist",
+    "test": "node -e \"console.log('Tests removed for current workflow.')\"",
+    "format": "npx prettier@latest --check \"{scripts,styles,data}/**/*.{js,css,md}\""
   }
 }

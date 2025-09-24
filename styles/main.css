@@ -629,6 +629,118 @@ body.tabletop {
   font-weight: 600;
 }
 
+.result-entry__header {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.result-detail__headline {
+  margin: 0.6rem 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.result-section--chart {
+  margin-top: 1.6rem;
+}
+
+.dimension-chart {
+  list-style: none;
+  padding: 0;
+  margin: 0.8rem 0 0;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.dimension-chart__item {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.dimension-chart__item::before {
+  content: none;
+}
+
+.dimension-chart__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.dimension-chart__dimension {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.dimension-chart__axis {
+  text-transform: uppercase;
+}
+
+.dimension-chart__bar {
+  display: flex;
+  align-items: stretch;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid rgba(123, 89, 115, 0.18);
+  background: rgba(123, 89, 115, 0.12);
+  height: 1.25rem;
+}
+
+.dimension-chart__segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  transition: flex-basis 0.3s ease;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.dimension-chart__segment span {
+  padding: 0 0.35rem;
+}
+
+.dimension-chart__segment--negative {
+  background: rgba(255, 138, 184, 0.75);
+  box-shadow: inset -2px 0 6px rgba(123, 89, 115, 0.25);
+}
+
+.dimension-chart__segment--positive {
+  background: rgba(92, 193, 162, 0.85);
+  box-shadow: inset 2px 0 6px rgba(66, 122, 105, 0.2);
+}
+
+.dimension-chart__caption {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.result-feedback {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.result-feedback__column h5 {
+  margin: 0 0 0.4rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.result-feedback__column ul {
+  margin: 0;
+}
+
+.result-entry__footer {
+  margin-top: 1.6rem;
+}
+
 .result-side {
   display: grid;
   gap: 1.5rem;

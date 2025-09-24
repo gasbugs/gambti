@@ -1,4 +1,4 @@
-import { questions, resultSummaries } from "../../data/mbti.js";
+import { questions, resultSummaries } from "../data/mbti.js";
 
 const dimensionPairs = {
   EI: ["E", "I"],
@@ -14,10 +14,17 @@ export function calculateMbti(answers) {
     TF: 0,
     JP: 0
   };
+  const counts = {
+    EI: 0,
+    SN: 0,
+    TF: 0,
+    JP: 0
+  };
 
   for (const question of questions) {
     const response = Number(answers?.[question.id] ?? 0);
     totals[question.dimension] += response * question.orientation;
+    counts[question.dimension] += 1;
   }
 
   const breakdown = {};
@@ -25,7 +32,19 @@ export function calculateMbti(answers) {
 
   for (const [dimension, [positive, negative]] of Object.entries(dimensionPairs)) {
     const score = totals[dimension];
-    breakdown[dimension] = score;
+    const totalWeight = counts[dimension] * 2 || 1;
+    const positiveRatio = Math.min(Math.max((score + totalWeight) / (totalWeight * 2), 0), 1);
+    const negativeRatio = 1 - positiveRatio;
+    breakdown[dimension] = {
+      dimension,
+      score,
+      maxScore: totalWeight,
+      positive,
+      negative,
+      dominant: score >= 0 ? positive : negative,
+      positiveRatio,
+      negativeRatio
+    };
     code += score >= 0 ? positive : negative;
   }
 

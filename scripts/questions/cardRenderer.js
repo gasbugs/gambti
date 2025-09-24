@@ -1,4 +1,4 @@
-import { likertScale } from "../../../data/mbti.js";
+import { likertScale } from "../../data/mbti.js";
 
 const CARD_SYMBOLS = ["❄️", "🍀", "📜", "🔥", "🌈"];
 

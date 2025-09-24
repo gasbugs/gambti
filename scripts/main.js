@@ -1,4 +1,4 @@
-import { questions, resultSummaries } from "../../data/mbti.js";
+import { questions, resultSummaries } from "../data/mbti.js";
 import {
   getState,
   setCurrentQuestion,
@@ -350,31 +350,160 @@ function finalizeResult() {
 function renderResult(result) {
   const { code, profile, breakdown } = result;
   if (!resultCard) return;
+  const dimensionOrder = ["EI", "SN", "TF", "JP"];
+  const dimensionEntries = dimensionOrder
+    .map((dimension) => breakdown[dimension])
+    .filter((entry) => Boolean(entry));
+
+  const chartMarkup = dimensionEntries
+    .map((entry) => {
+      const positivePct = Math.round(entry.positiveRatio * 100);
+      const negativePct = 100 - positivePct;
+      const ariaLabel = `${entry.dimension} 축 - ${entry.positive} ${positivePct}%, ${entry.negative} ${negativePct}%`;
+      const positiveLabel = positivePct >= 15 ? `<span>${positivePct}%</span>` : "";
+      const negativeLabel = negativePct >= 15 ? `<span>${negativePct}%</span>` : "";
+      return `
+        <li class="dimension-chart__item">
+          <div class="dimension-chart__heading">
+            <span class="dimension-chart__axis dimension-chart__axis--negative">${entry.negative}</span>
+            <span class="dimension-chart__dimension">${entry.dimension}</span>
+            <span class="dimension-chart__axis dimension-chart__axis--positive">${entry.positive}</span>
+          </div>
+          <div class="dimension-chart__bar" role="img" aria-label="${ariaLabel}">
+            <div class="dimension-chart__segment dimension-chart__segment--negative" style="flex-basis: ${negativePct}%">${negativeLabel}</div>
+            <div class="dimension-chart__segment dimension-chart__segment--positive" style="flex-basis: ${positivePct}%">${positiveLabel}</div>
+          </div>
+          <p class="dimension-chart__caption">${entry.dominant} 성향 (${entry.score >= 0 ? "+" : ""}${entry.score} / ${entry.maxScore})</p>
+        </li>
+      `;
+    })
+    .join("");
+
+  const chartSection = `
+    <section class="result-section result-section--chart">
+      <h4>지표 그래프</h4>
+      <ul class="dimension-chart" role="list">
+        ${chartMarkup}
+      </ul>
+    </section>
+  `;
+
+  const breakdownSection = `
+    <section class="result-section">
+      <h4>지표 해석</h4>
+      <ul>
+        ${dimensionEntries
+          .map(
+            (entry) =>
+              `<li>${entry.dimension} — ${entry.dominant} 선호 (${entry.score >= 0 ? "+" : ""}${entry.score})</li>`
+          )
+          .join("")}
+      </ul>
+    </section>
+  `;
+
+  const strengthsMarkup = profile.strengths?.length
+    ? `<section class="result-section">
+         <h4>강점 카드</h4>
+         <ul>${profile.strengths.map((item) => `<li>${item}</li>`).join("")}</ul>
+       </section>`
+    : "";
+
+  const growthMarkup = profile.growth?.length
+    ? `<section class="result-section">
+         <h4>성장 포인트</h4>
+         <ul>${profile.growth.map((item) => `<li>${item}</li>`).join("")}</ul>
+       </section>`
+    : "";
+
+  let detailMarkup = "";
+
+  if (profile.detail) {
+    const {
+      headline,
+      traitsHeading,
+      traits,
+      behaviorHeading,
+      behaviors,
+      feedbackHeading,
+      feedback
+    } = profile.detail;
+
+    const traitSection = traits?.length
+      ? `<section class="result-section">
+           <h4>${traitsHeading}</h4>
+           <ul>${traits.map((item) => `<li>${item}</li>`).join("")}</ul>
+         </section>`
+      : "";
+
+    const behaviorSection = behaviors?.length
+      ? `<section class="result-section">
+           <h4>${behaviorHeading}</h4>
+           <ul>${behaviors.map((item) => `<li>${item}</li>`).join("")}</ul>
+         </section>`
+      : "";
+
+    let feedbackSection = "";
+    if (feedback?.positive?.length || feedback?.negative?.length) {
+      const positiveList = feedback?.positive?.length
+        ? `<div class="result-feedback__column">
+             <h5>${feedback.positiveTitle ?? "긍정적"}</h5>
+             <ul>${feedback.positive.map((item) => `<li>${item}</li>`).join("")}</ul>
+           </div>`
+        : "";
+      const negativeList = feedback?.negative?.length
+        ? `<div class="result-feedback__column">
+             <h5>${feedback.negativeTitle ?? "부정적"}</h5>
+             <ul>${feedback.negative.map((item) => `<li>${item}</li>`).join("")}</ul>
+           </div>`
+        : "";
+      feedbackSection = `
+        <section class="result-section">
+          <h4>${feedbackHeading}</h4>
+          <div class="result-feedback">
+            ${positiveList}
+            ${negativeList}
+          </div>
+        </section>
+      `;
+    }
+
+    const headlineMarkup = headline
+      ? `<p class="result-detail__headline">${headline}</p>`
+      : "";
+
+    detailMarkup = `
+      ${headlineMarkup}
+      ${chartSection}
+      ${traitSection}
+      ${behaviorSection}
+      ${feedbackSection}
+      ${strengthsMarkup}
+      ${growthMarkup}
+    `;
+  } else {
+    detailMarkup = `
+      ${chartSection}
+      ${breakdownSection}
+      ${strengthsMarkup}
+      ${growthMarkup}
+    `;
+  }
+
+  const footerMarkup = profile.gameTip
+    ? `<footer class="result-entry__footer">
+         <p class="result-gametip">게임 팁: ${profile.gameTip}</p>
+       </footer>`
+    : "";
+
   resultCard.innerHTML = `
-    <header>
+    <header class="result-entry__header">
       <p class="result-entry__badge">${code}</p>
       <h3>${profile.title}</h3>
       <p class="result-summary">${profile.summary}</p>
     </header>
-    <section>
-      <h4>강점 카드</h4>
-      <ul>${profile.strengths.map((item) => `<li>${item}</li>`).join("")}</ul>
-    </section>
-    <section>
-      <h4>성장 포인트</h4>
-      <ul>${profile.growth.map((item) => `<li>${item}</li>`).join("")}</ul>
-    </section>
-    <section>
-      <h4>지표 점수</h4>
-      <ul>
-        ${Object.entries(breakdown)
-          .map(([dimension, score]) => `<li>${dimension}: ${score}</li>`)
-          .join("")}
-      </ul>
-    </section>
-    <footer>
-      <p class="result-gametip">게임 팁: ${profile.gameTip}</p>
-    </footer>
+    ${detailMarkup}
+    ${footerMarkup}
   `;
 }
 
