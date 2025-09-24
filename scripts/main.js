@@ -141,6 +141,39 @@ const QUESTION_ART = {
   }
 };
 
+const LETTER_LABELS = {
+  E: "외향성(E)",
+  I: "내향성(I)",
+  S: "감각형(S)",
+  N: "직관형(N)",
+  T: "사고형(T)",
+  F: "감정형(F)",
+  J: "판단형(J)",
+  P: "인식형(P)"
+};
+
+const LETTER_TRAITS = {
+  E: "외향성(E): 에너지를 외부로 집중하며, 사교적이고 대인 관계가 넓습니다.",
+  I: "내향성(I): 차분한 공간에서 에너지를 충전하며, 깊이 있는 관계를 소중히 여깁니다.",
+  S: "감각형(S): 현실적이고 현재를 중요시하며, 사실과 데이터를 중시하는 경향이 있습니다.",
+  N: "직관형(N): 가능성과 패턴을 탐색하며, 미래의 비전과 영감을 즐깁니다.",
+  T: "사고형(T): 객관적이고 논리적인 분석을 통해 문제를 해결하며, 인과 관계와 원리원칙을 중요하게 생각합니다.",
+  F: "감정형(F): 공감과 가치를 기준으로 결정을 내리며, 사람 중심의 조화를 중시합니다.",
+  J: "판단형(J): 계획적이고 조직적이며, 결단력 있게 일을 추진하고 마무리를 잘하는 성향을 보입니다.",
+  P: "인식형(P): 변화에 유연하게 대응하며, 상황에 맞춰 계획을 조정하고 새로운 흐름을 탐색합니다."
+};
+
+const LETTER_BEHAVIORS = {
+  E: "타고난 분위기 메이커: 활기찬 자리를 주도하며 사람들에게 에너지를 전합니다.",
+  I: "몰입형 관찰자: 조용한 집중 속에서 깊이 있는 통찰을 찾아냅니다.",
+  S: "현실 감각: 지금 이 순간의 구체적인 사실과 디테일을 놓치지 않습니다.",
+  N: "아이디어 탐험가: 패턴과 가능성을 엮어 새로운 방향을 제시합니다.",
+  T: "논리 추진력: 원리와 데이터에 기반해 명확한 해결책을 설계합니다.",
+  F: "공감 코디네이터: 관계의 온도를 살피며 모두가 함께 나아가도록 돕습니다.",
+  J: "계획 설계자: 일정과 우선순위를 정교하게 다듬어 목표를 실현합니다.",
+  P: "유연한 조정자: 변화에 발맞춰 흐름을 재구성하고 즉흥력을 발휘합니다."
+};
+
 init();
 
 function init() {
@@ -388,7 +421,47 @@ function renderResult(result) {
     </section>
   `;
 
-  const breakdownSection = `
+  const detail = profile.detail ?? buildTypeDetail({ code, profile });
+
+  const headlineMarkup = detail.headline
+    ? `<p class="result-detail__headline">${detail.headline}</p>`
+    : "";
+
+  const traitsMarkup = detail.traits?.length
+    ? `<section class="result-section">
+         <h4>${detail.traitsHeading ?? "유형의 주요 특징"}</h4>
+         <ul>${detail.traits.map((item) => `<li>${item}</li>`).join("")}</ul>
+       </section>`
+    : "";
+
+  const behaviorMarkup = detail.behaviors?.length
+    ? `<section class="result-section">
+         <h4>${detail.behaviorHeading ?? "행동 및 성격적 특징"}</h4>
+         <ul>${detail.behaviors.map((item) => `<li>${item}</li>`).join("")}</ul>
+       </section>`
+    : "";
+
+  let feedbackMarkup = "";
+  if (detail.feedback?.positive?.length || detail.feedback?.negative?.length) {
+    const buildFeedbackLine = (title, items) => {
+      if (!items?.length) return "";
+      const text = items.join(", ");
+      return `<p class="result-feedback__line"><strong>${title ?? ""}:</strong> ${text}</p>`;
+    };
+    const positiveLine = buildFeedbackLine(detail.feedback.positiveTitle ?? "긍정적", detail.feedback.positive);
+    const negativeLine = buildFeedbackLine(detail.feedback.negativeTitle ?? "부정적", detail.feedback.negative);
+    feedbackMarkup = `
+      <section class="result-section">
+        <h4>${detail.feedbackHeading ?? "자주 듣는 말"}</h4>
+        <div class="result-feedback">
+          ${positiveLine}
+          ${negativeLine}
+        </div>
+      </section>
+    `;
+  }
+
+  const breakdownMarkup = `
     <section class="result-section">
       <h4>지표 해석</h4>
       <ul>
@@ -416,80 +489,6 @@ function renderResult(result) {
        </section>`
     : "";
 
-  let detailMarkup = "";
-
-  if (profile.detail) {
-    const {
-      headline,
-      traitsHeading,
-      traits,
-      behaviorHeading,
-      behaviors,
-      feedbackHeading,
-      feedback
-    } = profile.detail;
-
-    const traitSection = traits?.length
-      ? `<section class="result-section">
-           <h4>${traitsHeading}</h4>
-           <ul>${traits.map((item) => `<li>${item}</li>`).join("")}</ul>
-         </section>`
-      : "";
-
-    const behaviorSection = behaviors?.length
-      ? `<section class="result-section">
-           <h4>${behaviorHeading}</h4>
-           <ul>${behaviors.map((item) => `<li>${item}</li>`).join("")}</ul>
-         </section>`
-      : "";
-
-    let feedbackSection = "";
-    if (feedback?.positive?.length || feedback?.negative?.length) {
-      const positiveList = feedback?.positive?.length
-        ? `<div class="result-feedback__column">
-             <h5>${feedback.positiveTitle ?? "긍정적"}</h5>
-             <ul>${feedback.positive.map((item) => `<li>${item}</li>`).join("")}</ul>
-           </div>`
-        : "";
-      const negativeList = feedback?.negative?.length
-        ? `<div class="result-feedback__column">
-             <h5>${feedback.negativeTitle ?? "부정적"}</h5>
-             <ul>${feedback.negative.map((item) => `<li>${item}</li>`).join("")}</ul>
-           </div>`
-        : "";
-      feedbackSection = `
-        <section class="result-section">
-          <h4>${feedbackHeading}</h4>
-          <div class="result-feedback">
-            ${positiveList}
-            ${negativeList}
-          </div>
-        </section>
-      `;
-    }
-
-    const headlineMarkup = headline
-      ? `<p class="result-detail__headline">${headline}</p>`
-      : "";
-
-    detailMarkup = `
-      ${headlineMarkup}
-      ${chartSection}
-      ${traitSection}
-      ${behaviorSection}
-      ${feedbackSection}
-      ${strengthsMarkup}
-      ${growthMarkup}
-    `;
-  } else {
-    detailMarkup = `
-      ${chartSection}
-      ${breakdownSection}
-      ${strengthsMarkup}
-      ${growthMarkup}
-    `;
-  }
-
   const footerMarkup = profile.gameTip
     ? `<footer class="result-entry__footer">
          <p class="result-gametip">게임 팁: ${profile.gameTip}</p>
@@ -502,9 +501,55 @@ function renderResult(result) {
       <h3>${profile.title}</h3>
       <p class="result-summary">${profile.summary}</p>
     </header>
-    ${detailMarkup}
+    ${chartSection}
+    ${headlineMarkup}
+    ${traitsMarkup}
+    ${behaviorMarkup}
+    ${feedbackMarkup}
+    ${breakdownMarkup}
+    ${strengthsMarkup}
+    ${growthMarkup}
     ${footerMarkup}
   `;
+}
+
+function buildTypeDetail({ code, profile }) {
+  const letters = code.split("");
+  const alias = profile.title.split("—")[1]?.trim() ?? profile.title;
+  const letterList = letters.map((letter) => LETTER_LABELS[letter]).filter(Boolean).join(", ");
+  const rawSummary = profile.summary.trim();
+  const summarySentence = rawSummary.endsWith(".") ? rawSummary : `${rawSummary}.`;
+  const summaryLine = summarySentence.startsWith("이 유형은")
+    ? summarySentence
+    : `이 유형은 ${summarySentence}`;
+
+  const letterPhrase = letterList ? `, ${letterList} 조합의 특징을 지녔습니다.` : ".";
+  const baseHeadline = `${code}는 MBTI 성격 유형으로 <strong>'${alias}'</strong>에 해당하며${letterPhrase}`;
+  const tidyHeadline = baseHeadline.replace(/\s+\./g, ".").trim();
+  const headline = `${tidyHeadline} ${summaryLine}`.trim();
+
+  const traits = letters.map((letter) => LETTER_TRAITS[letter]).filter(Boolean);
+  const behaviors = [
+    `핵심 요약: ${rawSummary}`,
+    ...letters.map((letter) => LETTER_BEHAVIORS[letter]).filter(Boolean)
+  ];
+
+  const feedback = {
+    positiveTitle: "긍정적",
+    positive: profile.strengths ?? [],
+    negativeTitle: "부정적",
+    negative: profile.growth ?? []
+  };
+
+  return {
+    headline,
+    traitsHeading: `${code} 유형의 주요 특징`,
+    traits,
+    behaviorHeading: `${code}의 행동 및 성격적 특징`,
+    behaviors,
+    feedbackHeading: `${code}가 자주 듣는 말`,
+    feedback
+  };
 }
 
 function updateTrack(currentIndex, answers) {
