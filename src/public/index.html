@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GAMBTI 카드 연구실</title>
+    <link rel="stylesheet" href="styles/main.css" />
+  </head>
+  <body class="tabletop">
+    <div class="tabletop__glow" aria-hidden="true"></div>
+    <header class="desk-header" role="banner">
+      <div class="desk-header__deck" aria-hidden="true">
+        <pre class="deck-ascii">
+          .-"""-.
+   _     / .===. \
+  ( )   / / o o \ \
+   X    | \  ^ / |
+  ( )   \ '---' /
+   ^      `-.-'
+        </pre>
+      </div>
+      <div class="desk-header__copy">
+        <h1>GAMBTI 카드 연구실</h1>
+        <p class="desk-header__tagline">카드를 넘길수록 성향 지도가 완성되고, 마지막엔 미니 게임 보상이 기다립니다.</p>
+      </div>
+      <aside class="lab-settings" aria-label="연구실 설정">
+        <label class="lab-toggle">
+          <input type="checkbox" id="toggle-animations" checked />
+          <span>애니메이션 유지</span>
+        </label>
+        <label class="lab-toggle">
+          <input type="checkbox" id="toggle-sounds" checked />
+          <span>사운드 효과</span>
+        </label>
+      </aside>
+      <nav class="lab-nav" aria-label="연구실 장면 선택">
+        <button class="nav-chip" data-target="intro">카드 덱</button>
+        <button class="nav-chip" data-target="journey">탐험 진행</button>
+        <button class="nav-chip" data-target="result">결과 노트</button>
+        <button class="nav-chip" data-target="game">미니 게임</button>
+      </nav>
+    </header>
+
+    <main id="app" class="tabletop__main" role="main">
+      <section class="scene scene-intro" data-scene="intro" aria-labelledby="intro-title">
+        <div class="intro-board">
+          <div class="intro-board__card">
+            <h2 id="intro-title">오늘의 자아 탐험 카드 뽑기</h2>
+            <p>카드를 한 장씩 뒤집으며 16가지 질문을 모으면, 당신만의 성향 노트와 맞춤 게임이 열린다.</p>
+            <ul class="intro-bullets">
+              <li>카드 진열대는 `src/public/` 안에 모두 준비되어 있다.</li>
+              <li>응답은 브라우저에만 저장되고 언제든 초기화 가능하다.</li>
+              <li>완료하면 랜덤 카드 팩과 미니 게임 보너스가 등장한다.</li>
+            </ul>
+            <button id="start-button" class="cta-button">카드 펼치기</button>
+          </div>
+          <div class="intro-board__deck" aria-hidden="true">
+            <div class="floating-card floating-card--one">EI 탐험 카드</div>
+            <div class="floating-card floating-card--two">SN 보물 지도</div>
+            <div class="floating-card floating-card--three">TF 감정 추적기</div>
+            <div class="floating-card floating-card--four">JP 일정 룰렛</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="scene scene-journey" data-scene="journey" hidden aria-labelledby="journey-title">
+        <div class="journey-header">
+          <div class="journey-mascot" id="journey-mascot" aria-live="polite">🐧 탐험가 펭귄이 대기 중!</div>
+          <div class="journey-progress" aria-label="진행 경로">
+            <span id="journey-progress-label" class="journey-progress__label">1 / 16</span>
+            <ol id="journey-track" class="journey-track" role="list"></ol>
+          </div>
+        </div>
+        <article class="story-card" aria-live="polite">
+          <figure class="story-card__illustration">
+            <img
+              id="question-image"
+              src="assets/mascots/placeholder-card.png"
+              alt="카드 일러스트가 곧 표시됩니다."
+              width="360"
+              height="240"
+            />
+          </figure>
+          <div class="story-card__front">
+            <p id="question-text">첫 번째 카드를 준비하는 중...</p>
+          </div>
+          <div class="story-card__back" id="question-backdrop" aria-hidden="true"></div>
+        </article>
+        <div id="answer-fan" class="answer-fan" role="group" aria-label="답변 카드"></div>
+        <div id="mini-event" class="mini-event" hidden></div>
+        <div class="journey-actions">
+          <button id="prev-question" class="chip-button">이전 카드</button>
+          <button id="next-question" class="chip-button chip-button--primary">다음 카드</button>
+        </div>
+      </section>
+
+      <section class="scene scene-result" data-scene="result" hidden aria-labelledby="result-title">
+        <div class="result-desk">
+          <div class="result-notebook">
+            <h2 id="result-title">결과 노트</h2>
+            <article id="result-card" class="result-entry" aria-live="polite">
+              <p>아직 수집한 카드가 없어요. 탐험을 완료하면 유형 노트가 펼쳐집니다.</p>
+            </article>
+          </div>
+          <aside class="result-side">
+            <div class="bonus-pack">
+              <h3>랜덤 카드 팩</h3>
+              <p id="bonus-card" class="bonus-card">새로운 카드 팩을 열어 미니 도전을 받아보세요!</p>
+              <button id="open-pack" class="chip-button chip-button--accent">카드 팩 열기</button>
+            </div>
+            <div class="result-actions">
+              <button id="share-result" class="chip-button">공유하기</button>
+              <button id="retry-test" class="chip-button">다시 덱 섞기</button>
+              <button id="go-to-game" class="chip-button chip-button--primary">미니 게임으로</button>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="scene scene-game" data-scene="game" hidden aria-labelledby="game-title">
+        <div class="game-cabinet">
+          <h2 id="game-title">맞춤 미니 게임</h2>
+          <p class="game-description">타이머가 울리기 전에 나타나는 광석 타겟을 클릭해 콤보를 이어가세요. 유형별 보너스 메시지도 함께 제공됩니다.</p>
+          <div class="game-control-panel" role="group" aria-label="게임 난이도">
+            <button data-difficulty="normal" class="chip-button chip-button--primary">워밍업</button>
+            <button data-difficulty="challenge" class="chip-button">폭발 모드</button>
+          </div>
+          <div class="game-status" aria-live="polite">
+            <p id="game-message">원하는 난이도를 선택하면 즉시 카드형 타겟이 나타납니다.</p>
+            <p><strong>현재 점수:</strong> <span id="game-score">0</span></p>
+            <p><strong>최고 점수:</strong> <span id="game-high-score">0</span></p>
+          </div>
+          <div id="game-board" class="game-board" role="application" aria-label="반응 속도 게임 영역" tabindex="0"></div>
+          <button id="stop-game" class="chip-button">잠깐 쉬기</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="desk-footer" role="contentinfo">
+      <small>모든 데이터는 이 기기에서만 저장됩니다. 언제든 새로운 카드 세트를 시작해 보세요.</small>
+    </footer>
+
+    <script type="module" src="scripts/main.js"></script>
+  </body>
+</html>
