@@ -1,7 +1,5 @@
 import { likertScale } from "../../data/mbti.js";
 
-const CARD_SYMBOLS = ["❄️", "🍀", "📜", "🔥", "🌈"];
-
 const DIMENSION_GUIDES = {
   EI: {
     emoji: "🐧",
@@ -44,37 +42,56 @@ export function getBackdropStyle(dimension) {
   return DIMENSION_BACKDROPS[dimension] ?? "radial-gradient(circle, rgba(200, 200, 200, 0.45), transparent 70%)";
 }
 
-export function renderAnswerCards(container, selectedValue, onSelect) {
+const BUBBLE_SCALES = [1.25, 1.05, 0.85, 1.05, 1.25];
+
+export function renderAnswerCards({ container, questionId, selectedValue, onSelect }) {
   if (!container) return;
   container.innerHTML = "";
-  likertScale.forEach((option, index) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "card-option";
-    if (selectedValue === option.value) {
-      button.classList.add("selected");
-    }
-    button.setAttribute("aria-pressed", selectedValue === option.value ? "true" : "false");
+  container.classList.add("likert-scale");
+  container.setAttribute("data-question", questionId);
 
-    const inner = document.createElement("span");
-    inner.className = "card-option__inner";
+  const orderedScale = [...likertScale].sort((a, b) => b.value - a.value);
 
-    const front = document.createElement("span");
-    front.className = "card-option__front";
-    front.textContent = CARD_SYMBOLS[index] ?? "★";
+  orderedScale.forEach((option, index) => {
+    const label = document.createElement("label");
+    label.className = "likert-option";
+    label.style.setProperty("--bubble-scale", BUBBLE_SCALES[index] ?? 1);
+    label.dataset.value = option.value.toString();
+    label.title = option.label;
 
-    const back = document.createElement("span");
-    back.className = "card-option__back";
-    back.textContent = option.label;
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = `answer-${questionId}`;
+    input.value = option.value.toString();
+    input.className = "likert-option__input";
+    input.checked = selectedValue === option.value;
+    input.setAttribute("aria-label", option.label);
 
-    inner.append(front, back);
-    button.append(inner);
-    button.dataset.value = option.value;
+    const bubble = document.createElement("span");
+    bubble.className = "likert-option__bubble";
+    bubble.setAttribute("aria-hidden", "true");
 
-    button.addEventListener("click", () => {
+    const srLabel = document.createElement("span");
+    srLabel.className = "likert-option__text sr-only";
+    srLabel.textContent = option.label;
+
+    input.addEventListener("change", () => {
       onSelect(option.value);
     });
 
-    container.appendChild(button);
+    input.addEventListener("focus", () => {
+      label.classList.add("is-focused");
+    });
+
+    input.addEventListener("blur", () => {
+      label.classList.remove("is-focused");
+    });
+
+    if (input.checked) {
+      label.classList.add("is-active");
+    }
+
+    label.append(input, bubble, srLabel);
+    container.appendChild(label);
   });
 }

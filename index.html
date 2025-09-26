@@ -23,16 +23,6 @@
         <h1>GAMBTI 카드 연구실</h1>
         <p class="desk-header__tagline">카드를 넘길수록 성향 지도가 완성되고, 마지막엔 미니 게임 보상이 기다립니다.</p>
       </div>
-      <aside class="lab-settings" aria-label="연구실 설정">
-        <label class="lab-toggle">
-          <input type="checkbox" id="toggle-animations" checked />
-          <span>애니메이션 유지</span>
-        </label>
-        <label class="lab-toggle">
-          <input type="checkbox" id="toggle-sounds" checked />
-          <span>사운드 효과</span>
-        </label>
-      </aside>
       <nav class="lab-nav" aria-label="연구실 장면 선택">
         <button class="nav-chip" data-target="intro">카드 덱</button>
         <button class="nav-chip" data-target="journey">탐험 진행</button>
@@ -46,11 +36,10 @@
         <div class="intro-board">
           <div class="intro-board__card">
             <h2 id="intro-title">오늘의 자아 탐험 카드 뽑기</h2>
-            <p>카드를 한 장씩 뒤집으며 16가지 질문을 모으면, 당신만의 성향 노트와 맞춤 게임이 열린다.</p>
+            <p>첫 카드를 펼치면 마스코트가 나타나 당신의 선택을 재촉합니다. 16장을 모을 때마다 연구실이 달라지죠.</p>
             <ul class="intro-bullets">
-              <li>카드 진열대는 저장소 루트(예: `index.html`, `scripts/`, `styles/`, `assets/`)에 모두 정돈되어 있다.</li>
-              <li>응답은 브라우저에만 저장되고 언제든 초기화 가능하다.</li>
-              <li>완료하면 랜덤 카드 팩과 미니 게임 보너스가 등장한다.</li>
+              <li>탐험 중엔 깜짝 이벤트 카드가 튀어나와 보너스를 부여합니다.</li>
+              <li>완주하면 즉시 유형 노트와 맞춤 미니 게임이 열립니다.</li>
             </ul>
             <button id="start-button" class="cta-button">카드 펼치기</button>
           </div>
@@ -86,7 +75,8 @@
           </div>
           <div class="story-card__back" id="question-backdrop" aria-hidden="true"></div>
         </article>
-        <div id="answer-fan" class="answer-fan" role="group" aria-label="답변 카드"></div>
+        <div id="answer-fan" class="answer-fan" role="radiogroup" aria-label="답변 선택"></div>
+        <p id="answer-selection" class="answer-selection" aria-live="polite" data-state="empty"></p>
         <div id="mini-event" class="mini-event" hidden></div>
         <div class="journey-actions">
           <button id="prev-question" class="chip-button">이전 카드</button>
@@ -138,6 +128,16 @@
 
     <footer class="desk-footer" role="contentinfo">
       <small>모든 데이터는 이 기기에서만 저장됩니다. 언제든 새로운 카드 세트를 시작해 보세요.</small>
+      <div class="lab-preferences" role="group" aria-label="환경 설정">
+        <label class="lab-toggle">
+          <input type="checkbox" id="toggle-animations" checked />
+          <span>애니메이션 유지</span>
+        </label>
+        <label class="lab-toggle">
+          <input type="checkbox" id="toggle-sounds" checked />
+          <span>사운드 효과</span>
+        </label>
+      </div>
     </footer>
 
     <script type="module" src="scripts/main.js"></script>

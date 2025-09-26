@@ -1,4 +1,4 @@
-import { questions, resultSummaries } from "../data/mbti.js";
+import { questions, resultSummaries, likertScale } from "../data/mbti.js";
 import {
   getState,
   setCurrentQuestion,
@@ -34,6 +34,10 @@ const progressLabel = document.querySelector("#journey-progress-label");
 const trackContainer = document.querySelector("#journey-track");
 const miniEventContainer = document.querySelector("#mini-event");
 const resultCard = document.querySelector("#result-card");
+
+const journeyScene = document.querySelector('[data-scene="journey"]');
+const headerEl = document.querySelector('.desk-header');
+const selectionFeedback = document.querySelector("#answer-selection");
 
 const animationToggle = document.querySelector("#toggle-animations");
 const soundToggle = document.querySelector("#toggle-sounds");
@@ -195,6 +199,7 @@ function bindEvents() {
     const nextIndex = Math.max(0, state.currentQuestion - 1);
     setCurrentQuestion(nextIndex);
     renderQuestion(nextIndex);
+    scrollJourneyIntoView();
     soundKit.play("flip");
   });
 
@@ -216,6 +221,7 @@ function bindEvents() {
       const nextIndex = Math.min(questions.length - 1, index + 1);
       setCurrentQuestion(nextIndex);
       renderQuestion(nextIndex);
+      scrollJourneyIntoView();
       soundKit.play("page");
     }
   });
@@ -292,7 +298,11 @@ function navigateTo(sceneName) {
     const match = scene.dataset.scene === sceneName;
     scene.hidden = !match;
     if (match) {
-      scene.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (sceneName === "journey") {
+        scrollJourneyIntoView();
+      } else {
+        scene.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
   });
 
@@ -305,6 +315,46 @@ function navigateTo(sceneName) {
   } else {
     refreshHighScores();
   }
+}
+
+function prefersReducedMotion() {
+  return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+}
+
+function scrollJourneyIntoView({ instant = false } = {}) {
+  const target = journeyScene?.querySelector(".story-card") ?? journeyScene;
+  if (!target) return;
+
+  const header = headerEl ?? document.querySelector(".desk-header");
+  const headerHeight = header?.offsetHeight ?? 0;
+  const top = Math.max(target.getBoundingClientRect().top + window.scrollY - headerHeight - 16, 0);
+  const behavior = instant || prefersReducedMotion() ? "auto" : "smooth";
+
+  if ("scrollBehavior" in document.documentElement.style) {
+    window.scrollTo({ top, behavior });
+  } else {
+    window.scrollTo(0, top);
+  }
+}
+
+function findLikertLabel(value) {
+  const match = likertScale.find((option) => option.value === value);
+  return match?.label ?? "";
+}
+
+function updateSelectionFeedback(value) {
+  if (!selectionFeedback) {
+    return;
+  }
+
+  if (value === undefined || value === null) {
+    selectionFeedback.dataset.state = "empty";
+    selectionFeedback.textContent = "카드를 선택하면 느낌을 설명해 드려요.";
+    return;
+  }
+
+  selectionFeedback.dataset.state = "active";
+  selectionFeedback.textContent = findLikertLabel(value);
 }
 
 function renderQuestion(index) {
@@ -330,11 +380,20 @@ function renderQuestion(index) {
     mascotDisplay.textContent = `${guide.emoji} ${guide.title} — ${guide.motto}`;
   }
 
-  renderAnswerCards(answerFan, state.answers[question.id], (value) => {
-    recordAnswer(question.id, value);
-    soundKit.play("flip");
-    renderQuestion(getState().currentQuestion);
+  const selectedValue = state.answers[question.id];
+
+  renderAnswerCards({
+    container: answerFan,
+    questionId: question.id,
+    selectedValue,
+    onSelect: (value) => {
+      recordAnswer(question.id, value);
+      soundKit.play("flip");
+      renderQuestion(getState().currentQuestion);
+    }
   });
+
+  updateSelectionFeedback(selectedValue);
 
   miniEventManager.render(question);
 

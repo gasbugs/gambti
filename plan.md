@@ -60,7 +60,7 @@ MBTI 설문 화면을 누구나 눌러보고 싶게 만드는 것이 목표다. 
 - Day 5: 전체 흐름 연결, 기기별 반응형, 버그 픽스.
 
 ## 품질 및 배포 체크
-- 기본 검증: `npx codex build --src . --out dist`(지원되는 빌더 사용 시) 또는 `python3 -m http.server 8000 --directory .`로 수동 미리보기.
+- 기본 검증: `python3 -m http.server 8000 --directory .`로 간단히 호스팅하고 브라우저에서 `http://localhost:8000/index.html`을 연다.
 - 테스트: 자동화 스위트는 현재 중지 상태이므로 설문을 직접 완료하며 결과 그래프와 카드 보상을 검증한다.
-- 스타일 검증: `npx prettier@latest --check "{scripts,styles,data}/**/*.{js,css,md}"`로 포맷 유지.
+- 스타일 검증: 필요 시 `npx prettier@latest --check "{scripts,styles,data}/**/*.{js,css,md}"`로 포맷을 맞추거나 수동으로 정리한다.
 - 브라우저 확인: 데스크톱/모바일에서 카드 뒤집힘과 사운드 토글이 자연스럽게 동작하는지 점검.

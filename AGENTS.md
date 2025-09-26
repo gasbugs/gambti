@@ -1,22 +1,19 @@
 # Repository Guidelines
 
-## Project Structure & Module Organization
-Application assets now sit at the repository root: the entry point is `index.html`, client code in `scripts/`, shared styles in `styles/`, and art/audio under `assets/` (see `assets/mascots/`). Author datasets and fixtures stay inside `data/`. Generated bundles land in `dist/`; keep that directory clean between builds unless you are comparing diffs. Record workflow tweaks or environment notes in `plan.md` so the next agent can replicate your setup.
+## Project structure and module organization
+Everything runs client-side: load `index.html` directly in a browser or via a lightweight static server. Interaction logic sits inside `scripts/` as ES modules, shared visuals live in `styles/`, and long-form content plus fixtures stay in `data/`. Media goes under `assets/` (the MBTI mascots are in `assets/mascots/`). Keep `plan.md` up to date with any workflow hints you discover so the next agent can reproduce your setup quickly.
 
-## Build, Test, and Development Commands
-- `npm run watch` launches `npx codex watch -p 1227 --src . --out dist` for a live preview at `http://localhost:1227`.
-- `npm run build` executes `npx codex build --src . --out dist` to produce the production bundle in `dist/`.
-- `npm test` simply echoes that automated tests are paused for this iteration.
-- `npm run format` checks JS, CSS, and Markdown formatting across `scripts/`, `styles/`, and `data/` via Prettier.
+## Development workflow
+No build tooling or npm scripts are required. For live reload, start a static server such as `python -m http.server 8080` and navigate to `http://localhost:8080`. Modern browsers cache aggressively, so hard refresh when tweaking modules. When verifying mobile layouts, use responsive design mode or plug in a handset over local network tunnelling. Remove any temporary helper servers after you finish debugging.
 
-## Coding Style & Naming Conventions
-Use two-space indentation for templates and Stylus files under `styles/`. Client helpers remain ES modules exporting camelCase functions. Keep Markdown headings in sentence case and filenames in kebab-case (e.g., `getting-started.md`). Prefer Stylus mixins for repeated patterns, and run `npm run format` before committing to catch drift early.
+## Coding style and naming conventions
+Stick to vanilla ES modules exporting camelCase helpers. Keep markup and Stylus-derived CSS at two-space indentation. Prefer semantic HTML and aria attributes already in the scenes. Assets and Markdown files follow kebab-case (for example, `result-guide.md`). If you touch shared CSS, consider extracting repeated patterns into utility classes rather than nesting deeply. Reference colors and spacing via the existing CSS custom properties instead of hardcoding values.
 
-## Testing Guidelines
-The automated Mocha suite has been retired for now. When you touch scoring logic or state management, verify outcomes manually by completing a questionnaire and confirming the result graph reflects the expected axis balance. Capture any ad-hoc verification steps in `plan.md` so others can replay them quickly.
+## Testing guidelines
+Automated tests are suspended, so perform scenario-based checks. Run through the 16-question flow, confirm progress indicators, review the result notebook text, and play the mini game once per difficulty. On mobile, verify that toggles, chips, and deck actions read well inside a single column. Capture any manual steps or caveats in `plan.md` so regressions are easy to spot later.
 
-## Commit & Pull Request Guidelines
-Commits follow Conventional Commits (e.g., `feat: add scoring helper`) with subjects under 72 characters. Pull requests should summarize affected pages or helpers, attach the latest `npm run build` log, include screenshots for UI updates, and reference tracking issues. Document intentional build diffs using `npx shx diff -q dist dist_prev` and list follow-up tasks in numbered bullets for future agents.
+## Commit and pull request guidelines
+Use Conventional Commits (e.g., `feat: add mobile layout refinements`) with subjects under 72 characters. Pull requests should summarise affected scenes or helpers, include before/after screenshots for UI changes, and document manual verification notes. Link tracking issues when available, and call out any intentional limitations or follow-up tasks using numbered lists.
 
-## Security & Configuration Tips
-Do not commit secrets; rely on environment variables for tokens and API keys. Note any CLI overrides or environment requirements in `plan.md` to keep the project reproducible.
+## Security and configuration tips
+Do not bundle secrets in the repo; keep external API keys in your environment. Note browser flags, local storage resets, or audio permission quirks in `plan.md`. If you enable additional tooling (linters, formatters), record the exact command and cleanup instructions so later agents can reproduce or undo the setup.
