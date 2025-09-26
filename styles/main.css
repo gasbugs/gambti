@@ -13,7 +13,6 @@
   --deck-blue: #b9e7ff;
   --deck-sun: #ffe5a5;
   --success: #5cc1a2;
-  --success-soft: rgba(92, 193, 162, 0.15);
   --warning: #ffb347;
   font-family: "Pretendard", "Segoe UI", sans-serif;
   font-size: 16px;
@@ -429,7 +428,7 @@ body.tabletop {
 
 .answer-fan {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: clamp(0.6rem, 3vw, 1.4rem);
 }
@@ -477,7 +476,7 @@ body.tabletop {
   position: absolute;
   inset: 32%;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--success-soft), var(--accent-soft));
+  background: rgba(255, 138, 184, 0.15);
   transition: background 0.2s ease, transform 0.2s ease;
 }
 
@@ -491,11 +490,11 @@ body.tabletop {
   transform: translateY(-2px);
   border-color: var(--accent);
   box-shadow: 0 16px 32px rgba(255, 138, 184, 0.28);
-  background: linear-gradient(135deg, rgba(230, 255, 245, 0.95), rgba(255, 243, 251, 0.95));
+  background: linear-gradient(135deg, rgba(255, 214, 235, 0.95), rgba(255, 243, 251, 0.95));
 }
 
 .likert-option.is-active .likert-option__bubble::after {
-  background: linear-gradient(135deg, var(--success), var(--accent));
+  background: rgba(255, 138, 184, 0.6);
   transform: scale(1.15);
 }
 
