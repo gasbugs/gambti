@@ -489,12 +489,12 @@ body.tabletop {
 .likert-option.is-active .likert-option__bubble {
   transform: translateY(-2px);
   border-color: var(--accent);
-  box-shadow: 0 16px 32px rgba(255, 138, 184, 0.28);
-  background: linear-gradient(135deg, rgba(255, 214, 235, 0.95), rgba(255, 243, 251, 0.95));
+  box-shadow: 0 16px 32px var(--accent-soft);
+  background: linear-gradient(135deg, #fff, var(--accent-soft));
 }
 
 .likert-option.is-active .likert-option__bubble::after {
-  background: rgba(255, 138, 184, 0.6);
+  background: var(--accent);
   transform: scale(1.15);
 }
 
